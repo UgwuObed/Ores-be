@@ -1,0 +1,47 @@
+<?php
+namespace App\Http\Controllers;
+
+use App\Models\Recipe;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
+class RecipeController extends Controller
+{
+    public function fetchRecipes()
+    {
+        $response = Http::get('https://api.edamam.com/api/recipes/v2', [
+            'q' => 'anything',
+            'type' => 'public',
+            'app_id' => config('services.edamam.app_id'),
+            'app_key' => config('services.edamam.app_key'),
+        ]);
+
+        $data = $response->json();
+
+        foreach ($data['hits'] as $hit) {
+            $recipeData = $hit['recipe'];
+        
+            // Extracted values
+            $title = $recipeData['label'];
+            $calories = is_array($recipeData['calories']) ? $recipeData['calories']['total'] : $recipeData['calories'];
+            
+            $yield = is_array($recipeData['yield']) ? $recipeData['yield']['total'] : $recipeData['yield'];
+        
+        
+            // Save to database using Eloquent
+            Recipe::updateOrCreate(
+                ['external_id' => $recipeData['uri']],
+                [
+                    'title' => $title,
+                    'calories' => $calories,
+                    'yield' => $yield,
+                ]
+            );
+        }
+        
+
+        return 'Recipes fetched and saved!';
+    }
+}
+
+
