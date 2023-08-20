@@ -8,6 +8,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\DeactivationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\UserController;
+
 
 
 /*
@@ -24,12 +27,15 @@ use App\Http\Controllers\RecipeController;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/landing', function () {
+    return view('Landing-page');
+});
 
 
 Route::get('/counter', Counter::class);
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
+Route::post('/register', [RegisterController::class, 'register'])->middleware('web');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 
@@ -54,7 +60,26 @@ Route::get('/recipes/search', [RecipeController::class, 'searchRecipes'])->name(
 Route::get('/recipes/{id}', 'RecipeController@show')->name('recipes.show');
 Route::get('/recipes/showApi/{uri}', [RecipeController::class, 'showApi'])->name('recipes.showApi');
 
+Route::get('/recipes', [RecipeController::class, 'viewAllRecipes'])->name('recipes.index');
 
+
+
+
+Route::get('/restaurants/search', [RestaurantController::class, 'search'])->name('restaurants.search');
+Route::get('/restaurants/search-by-location', [RestaurantController::class, 'searchByLocation'])->name('restaurants.searchByLocation');
+
+Route::get('/restaurants/search', 'RestaurantController@searchByLocation')->name('restaurants.searchByLocation');
+Route::get('/restaurants', [RestaurantController::class, 'viewAllRestaurants'])->name('restaurants.index');
+
+
+
+
+
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/{username}', [UserController::class, 'show'])->name('users.show');
+Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+
+Route::get('/users/{first_name}', [UserController::class, 'show'])->name('users.show');
 
 
 Auth::routes();

@@ -9,6 +9,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\DeactivationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RestaurantController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -53,10 +56,16 @@ Route::get('/recipes/search', 'RecipeController@searchRecipes')->name('recipes.s
 Route::get('/recipes/search', [RecipeController::class, 'searchRecipes'])->name('recipes.search');
 Route::get('/recipes/{id}', 'RecipeController@show')->name('recipes.show');
 Route::get('/recipes/showApi/{uri}', [RecipeController::class, 'showApi'])->name('recipes.showApi');
+Route::get('/recipes/search', [RecipeController::class, 'searchRecipes'])->name('recipes.search');
+Route::get('/recipes', [RecipeController::class, 'viewAllRecipes'])->name('recipes.index');
 
+Route::get('/restaurants', [RestaurantController::class, 'viewAllRestaurants'])->name('restaurants.index');
 
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/{username}', [UserController::class, 'show'])->name('users.show');
+Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 
-
+Route::get('/users/{first_name}', [UserController::class, 'show'])->name('users.show');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

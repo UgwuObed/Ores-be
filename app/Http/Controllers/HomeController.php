@@ -25,7 +25,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-    $user = auth()->user(); // Get the authenticated user
+    $user = auth()->user(); 
     return view('home', compact('user'));
 }
         

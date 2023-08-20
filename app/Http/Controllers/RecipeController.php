@@ -15,12 +15,12 @@ class RecipeController extends Controller
         $query = \Illuminate\Support\Facades\Request::input('query');
 
 
-        // Search in the database
+        
         $dbResults = Recipe::where('title', 'LIKE', '%' . $query . '%')
             ->orWhere('title', 'LIKE', '%' . $query . '%')
             ->get();
 
-        // Search in the API
+       
         $apiResponse = Http::get('https://api.edamam.com/api/recipes/v2', [
             'q' => $query,
             'type' => 'public',
@@ -30,7 +30,7 @@ class RecipeController extends Controller
 
         $apiResults = $apiResponse->json()['hits'];
 
-        // Save API results to your database
+        
         foreach ($apiResults as $hit) {
             $recipeData = $hit['recipe'];
 
@@ -40,10 +40,10 @@ class RecipeController extends Controller
             $regularImageUrl = $recipeData['images']['REGULAR'];
             $yield = is_array($recipeData['yield']) ? $recipeData['yield']['total'] : $recipeData['yield'];
             if (is_array($recipeData['calories'])) {
-                // Assuming the calories array has a 'total' key
+                
                 $calories = $recipeData['calories']['total'];
             } else {
-                // If it's not an array, treat it as a single number
+                
                 $calories = $recipeData['calories'];
             }
             Recipe::updateOrCreate(
@@ -57,12 +57,25 @@ class RecipeController extends Controller
                 ]
             );
         }
-
-        return view('recipes.search', [
+        
+        foreach ($apiResults as &$hit) {
+            $hit['recipe']['randomPrice'] = rand(1000, 30000); 
+        }
+        return view('home', [
             'dbResults' => $dbResults,
             'apiResults' => $apiResults,
         ]);
+
+        
     }
+
+    public function viewAllRecipes()
+    
+        {
+            $recipes = Recipe::all();
+            
+            return response()->json(['recipes' => $recipes]);
+        }
 
 
     public function fetchRecipes()
@@ -79,13 +92,13 @@ class RecipeController extends Controller
         foreach ($data['hits'] as $hit) {
             $recipeData = $hit['recipe'];
         
-            // Extracted values
+           
             $title = $recipeData['label'];
             $calories = is_array($recipeData['calories']) ? $recipeData['calories']['total'] : $recipeData['calories'];
             $yield = is_array($recipeData['yield']) ? $recipeData['yield']['total'] : $recipeData['yield'];
         
         
-            // Save to database using Eloquent
+         
             Recipe::updateOrCreate(
                 ['external_id' => $recipeData['uri']],
                 [

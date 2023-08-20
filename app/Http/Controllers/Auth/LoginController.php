@@ -10,20 +10,24 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/login'; // Change this to the login route
+    protected $redirectTo = '/home';
 
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
     }
 
+    // Override the authenticated method to handle JSON response for API login
     protected function authenticated(Request $request, $user)
     {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Login successful.',
+                'user' => $user,
+            ]);
+        }
+
         if ($user->deactivated) {
             $this->guard()->logout();
             return redirect()->route('login')->with('warning', 'Account is deactivated. Please contact support.');
@@ -32,4 +36,3 @@ class LoginController extends Controller
         return redirect()->intended($this->redirectPath());
     }
 }
-
