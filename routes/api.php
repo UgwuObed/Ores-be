@@ -62,7 +62,7 @@ Route::get('/recipes', [RecipeController::class, 'viewAllRecipes'])->name('recip
 Route::get('/restaurants', [RestaurantController::class, 'viewAllRestaurants'])->name('restaurants.index');
 
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('/users/{username}', [UserController::class, 'show'])->name('users.show');
+Route::get('/users/{first_name}', [UserController::class, 'show'])->name('users.show');
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 
 Route::get('/users/{first_name}', [UserController::class, 'show'])->name('users.show');
@@ -73,3 +73,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+
